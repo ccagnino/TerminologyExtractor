@@ -5,7 +5,8 @@ import fitz, nltk, re, string
 def pdf_to_text(document):
     '''Takes in a .pdf document, returns it as plain text.
     '''
-    doc = fitz.open(document)  # Open a .pdf file with PyMuPDF
+    # Open a .pdf file with PyMuPDF
+    doc = fitz.open(document)
     text = ''
     # Loop over every page in .pdf file, get text and append it to the empty string
     for page in doc:
@@ -15,40 +16,40 @@ def pdf_to_text(document):
 def clean_text(document):
     '''Returns lowercased text.
     '''
-    lowercase_doc = document.lower()
-#   document = document.translate(str.maketrans('', '', string.punctuation))
-    no_punct_doc = re.sub(r'[^\w\s\]|[\n\r]', ' ', lowercase_doc)
-    no_punct_doc = re.sub(r'\s+', ' ', no_punct_doc)
-#   processed_doc = document.replace('\n',' ')
-#def clean_text(text):
-#    text = text.lower()
-#    text = re.sub('\[.*?\]', '', text)
-#    text = re.sub('<.*?>+', '', text)
-#    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
-#    text = re.sub('\n', '', text)
-#    text = re.sub('\w*\d\w*', '', text)
-#    return text
-    return no_punct_doc
+    lowercase = document.lower()
+    # Substitute word divisions with empty string
+    res = re.findall('.-\n\s.', lowercase)
+    if res: 
+        re.sub('-\n\s', '', lowercase)
+    # Substitute punctuation with a space
+    no_punct = re.sub(r'[^\w\s\-]|[\n\r]', ' ', lowercase)
+    # Remove double spacing
+    no_punct = re.sub(r'\s+', ' ', no_punct)
+
+    return no_punct
 
 def pos_tagging(document):
     '''Removes punctuation and returns tagged tokens.
     '''
-    tokens = nltk.word_tokenize(text)  # Tokenize text
+    # Tokenize text
+    tokens = nltk.word_tokenize(text)
     sentences = nltk.sent_tokenize(text)
-    filtered = [token for token in tokens if token.isalpha()] # Filters out everything that is not alphabetic
-    tagged = nltk.pos_tag(filtered)  # POS tagging tokens
+    # Filters out everything that is not alphabetic
+    filtered = [token for token in tokens if token.isalpha()]
+    # POS tagging tokens
+    tagged = nltk.pos_tag(filtered)
 
 #    for sentence in sentences:
 #        sentence_tokens = nltk.word_tokenize(sentence)
         # Find the tagged tokens that belong to the sentence
 #        sentence_tagged_tokens = [tagged for tagged in tagged if tagged[0] in sentence_tokens]
 #    return sentence_tagged_tokens
-#    return tagged
+    return tagged
 #    print(sentences)
 
-file = 'sample.pdf'
+file = 'sample1.pdf'
 print(clean_text(pdf_to_text(file)))
-#pos_tagging()
+#print(pos_tagging(clean_text(pdf_to_text((file)))))
 
 def chunking(document):
     '''
